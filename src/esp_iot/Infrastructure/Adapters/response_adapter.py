@@ -1,12 +1,20 @@
+from typing import Any, Dict
 from dataclasses import dataclass
-from ...__seedwork.Infrastructure.Http.request import IResponse
-@dataclass(frozen=True, slots=True)
+from ....__seedwork.Infrastructure.Http.response import IResponse
+
+
+@dataclass
 class SimpleResponse(IResponse):
-    def __init__(self):
-        self._data = None
+    data: Dict[str, Any] = None
 
-    def set_data(self, data: Any) -> None:
-        self._data = data
+    def set_data(self, data: Dict[str, Any]) -> None:
+        """Configura os dados da resposta."""
+        self.data = data
 
-    def get_data(self) -> Any:
-        return self._data
+    def get_data(self) -> Dict[str, Any]:
+        """Retorna os dados da resposta."""
+        return self.data
+
+    def is_success(self) -> bool:
+        """Verifica se a resposta indica sucesso."""
+        return self.data.get("success", False)

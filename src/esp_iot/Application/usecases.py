@@ -2,6 +2,7 @@ from ...__seedwork.Application.usecase import UseCase
 from ...__seedwork.Domain.Exceptions.domain_exception import DomainException
 from dataclasses import dataclass
 from .Adapters.data_repository import DataRepository
+from ..Domain.entities import DataOfEsp
 
 
 @dataclass(frozen=True, slots=True)
@@ -25,7 +26,8 @@ class CreateNewDataOfEsp(UseCase):
     
     def execute(self, input: 'Input') -> 'Output':
         try:
-            self.data_repository.add(input.humidity, input.temperature, input.conductivity, input.ph, input.nitrogen, input.phosphorus, input.potassium)
+            data_of_persistence = DataOfEsp(input.humidity, input.temperature, input.conductivity, input.ph, input.nitrogen, input.phosphorus, input.potassium)
+            self.data_repository.add(data_of_persistence)
             return self.Output(message="Data saved successfully", success=True)
         except DomainException as e:
             return self.Output(message=e.message, success=False)    

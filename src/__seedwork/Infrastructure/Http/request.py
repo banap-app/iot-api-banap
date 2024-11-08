@@ -1,13 +1,13 @@
 from abc import ABC, abstractmethod
-from typing import Any
-from dataclasses import dataclass
+from typing import Any, Dict
 
-@dataclass(frozen=True, slots=True)
+
 class IRequest(ABC):
+    """
+    Interface para representar uma requisição e permitir a obtenção dos dados.
+    """
+    
     @abstractmethod
-    def get_data(self) -> dict:
-        """Interface para obter os dados da requisição"""
+    def get_data(self) -> Dict[str, Any]:
+        """Método abstrato para obter os dados da requisição."""
         pass
-
-
-

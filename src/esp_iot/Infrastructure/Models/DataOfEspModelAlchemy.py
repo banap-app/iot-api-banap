@@ -1,4 +1,8 @@
-from .domain.entities import DataOfEsp
+from ...Domain.entities import DataOfEsp
+from sqlalchemy import Column, Float, Integer
+from sqlalchemy.ext.declarative import declarative_base
+
+Base = declarative_base()
 
 class DataOfEspModel(Base):
     __tablename__ = "data_of_esp"
