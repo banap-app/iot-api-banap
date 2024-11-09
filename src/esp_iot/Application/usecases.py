@@ -27,7 +27,7 @@ class CreateNewDataOfEsp(UseCase):
     def execute(self, input: 'Input') -> 'Output':
         try:
             data_of_persistence = DataOfEsp(input.humidity, input.temperature, input.conductivity, input.ph, input.nitrogen, input.phosphorus, input.potassium)
-            self.data_repository.add(data_of_persistence)
+            self.data_repository.add(data=data_of_persistence)
             return self.Output(message="Data saved successfully", success=True)
         except DomainException as e:
             return self.Output(message=e.message, success=False)    
