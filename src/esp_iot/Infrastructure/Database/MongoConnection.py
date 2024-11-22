@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 class MongoConnection:
     load_dotenv()
     port: int = int(getenv("PORT_DB"))
+    driver: str = getenv("DRIVER_DB") 
     username: str = getenv("USER_DB")
     password: str = getenv("PASSWD_DB")
     host: str = getenv("HOST_DB")
@@ -21,13 +22,24 @@ class MongoConnection:
     def connect(self):
         """
         Conecta ao banco de dados MongoDB utilizando o pymongo e retorna a conexão.
+        Se não conectar dentro de 10 segundos, lança uma exceção.
         """
-        uri = f"mongodb://{self.username}:{self.password}@{self.host}:{self.port}/{self.database}"
-        self.client = MongoClient(uri)
-        self.db = self.client[self.database]
-        self.collection = self.db[self.collection_name]
-        
-        return self.db
+        # URI utilizando o DRIVER_DB configurado no .env
+        uri = f"{self.driver}{self.username}:{self.password}@{self.host}/{self.database}?retryWrites=true&w=majority&appName=Cluster0"
+    
+        try:
+            print(f"Tentando conectar com a URI: {uri}")  # Para debugging
+            self.client = MongoClient(uri, serverSelectionTimeoutMS=10000)
+            # Testando a conexão
+            self.client.admin.command('ping')
+            self.db = self.client[self.database]
+            self.collection = self.db[self.collection_name]
+            print("Conexão com o MongoDB estabelecida com sucesso.")
+            return self.db
+        except errors.ServerSelectionTimeoutError as e:
+            raise ConnectionError(f"Erro de timeout ao conectar ao MongoDB: {e}")
+        except errors.InvalidURI as e:
+            raise ConnectionError(f"Erro na URI de conexão: {e}")
     
     def disconnect(self):
         """
