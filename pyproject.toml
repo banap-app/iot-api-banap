@@ -10,6 +10,7 @@ dependencies = [
     "python-dotenv>=1.0.1",
     "Flask>=3.0.3",
     "pymongo>=4.10.1",
+    "aws-wsgi>=0.2.7",
 ]
 requires-python = "==3.12.*"
 readme = "README.md"

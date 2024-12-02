@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 
-class Connection():
+class Connection(ABC):
     @abstractmethod
     def connect(self):
         raise NotImplementedError("connect should not be implemented")

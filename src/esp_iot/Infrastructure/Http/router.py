@@ -11,26 +11,34 @@ class FlaskRouter(IRouter):
     app: Flask
 
     def add_route(self, path: str, controller_method: Callable, methods=['POST']):
-        return self.app.add_url_rule(path, view_func=controller_method, methods=methods)
+        print(methods)
+        view_func = self.handle_request(controller_method, path, methods)
+        return self.app.add_url_rule(path, view_func=view_func, methods=methods)
 
-    def handle_request(self, controller_method: Callable):
+    def handle_request(self, controller_method: Callable, path: str, methods):
         def wrapper():
             try:
-                request_data = request.json
+                # Se for uma requisição POST, obter o corpo JSON
+                if 'POST' in methods:
+                    request_data = request.json
+                # Se for uma requisição GET, obter parâmetros da query string
+                elif 'GET' in methods:
+                    request_data = request.args.to_dict()  # Obtém parâmetros da URL (query string)
+                else:
+                    raise ValueError("Unsupported HTTP method")
 
+                # Cria um SimpleRequest com os dados obtidos
                 simple_request = SimpleRequest(data=request_data)
                 response: SimpleResponse = controller_method(simple_request)
 
-                # Verifica se a resposta foi bem sucedida com base no método is_success
+                # Verifica se a resposta foi bem-sucedida
                 if response.is_success():
-                    # Retorna os dados da resposta
                     return jsonify(response.get_data()), 200
                 else:
-                    # Se a resposta indicou falha, retorna 400 ou o código apropriado
                     return jsonify(response.get_data()), 400
 
-
             except KeyError as e:
+                # Tratando erros de chaves faltando no request
                 error_response = SimpleResponse()
                 error_response.set_data({
                     "message": f"Missing field {str(e)}",
@@ -39,6 +47,7 @@ class FlaskRouter(IRouter):
                 return jsonify(error_response.get_data()), 400
 
             except Exception as e:
+                # Tratando outros erros
                 error_response = SimpleResponse()
                 error_response.set_data({
                     "message": f"An error occurred: {str(e)}",
@@ -46,4 +55,6 @@ class FlaskRouter(IRouter):
                 })
                 return jsonify(error_response.get_data()), 500
 
+        # Atribui um nome único à função
+        wrapper.__name__ = f"view_func_{path.strip('/').replace('/', '_')}"
         return wrapper

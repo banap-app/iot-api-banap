@@ -1,5 +1,6 @@
-from dataclasses import dataclass, fields
+from dataclasses import dataclass, field, fields
 from typing import Optional
+from datetime import datetime, timedelta
 from ...__seedwork.Domain.entity import Entity
 from ...__seedwork.Domain.Exceptions.domain_exception import DomainException
 
@@ -13,16 +14,26 @@ class DataOfEsp(Entity):
     nitrogen: Optional[float] = 0.0
     phosphorus: Optional[float] = 0.0
     potassium: Optional[float] = 0.0
-    
+    created_at: Optional[datetime] = field(default=None)
+    updated_at: Optional[datetime] = field(default=None)
+
     def __post_init__(self):
+        # Calcula o horário do Brasil (UTC-3)
+        now = datetime.utcnow() - timedelta(hours=3)
+        
+        # Atribui os valores de created_at e updated_at
+        object.__setattr__(self, "created_at", now)
+        object.__setattr__(self, "updated_at", now)
+
+        # Valida os campos
         errors = self.validate()
         if errors:
             raise DomainException(f"Validation: {errors}")
 
     def validate(self):
         errors = []
-        for field in fields(self):
-            value = getattr(self, field.name)
-            if value < 0.0:
-                errors.append(f"{field.name} cannot be negative.")
+        for field_ in fields(self):
+            value = getattr(self, field_.name)
+            if isinstance(value, float) and value < 0.0:
+                errors.append(f"{field_.name} cannot be negative.")
         return errors

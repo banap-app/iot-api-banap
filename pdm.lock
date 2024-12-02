@@ -5,10 +5,20 @@
 groups = ["default"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:7b001475471b5a57cd4adca28527868b4d78a18811e3a0829551a46ac0c92808"
+content_hash = "sha256:60c41b518a5653417b14ed405dffd348e2044b3b01ac0977833760fb9d602aa9"
 
 [[metadata.targets]]
 requires_python = "==3.12.*"
+
+[[package]]
+name = "aws-wsgi"
+version = "0.2.7"
+summary = "WSGI adapter for AWS API Gateway/Lambda Proxy Integration"
+groups = ["default"]
+files = [
+    {file = "aws-wsgi-0.2.7.tar.gz", hash = "sha256:eb0b00970e80d96b52c0806ceae2ff98ab96c90f67651765755c5236f9e6e50d"},
+    {file = "aws_wsgi-0.2.7-py2.py3-none-any.whl", hash = "sha256:37e16b6a211f251d9f72ab85018c4127a59dc0fc81263c19f312a6a8333f9908"},
+]
 
 [[package]]
 name = "blinker"

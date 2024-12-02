@@ -2,6 +2,7 @@ from ...__seedwork.Application.usecase import UseCase
 from ...__seedwork.Domain.Exceptions.domain_exception import DomainException
 from dataclasses import dataclass
 from .Adapters.data_repository import DataRepository
+from datetime import datetime
 from ..Domain.entities import DataOfEsp
 
 
@@ -33,3 +34,27 @@ class CreateNewDataOfEsp(UseCase):
             return self.Output(message=e.message, success=False)    
         
         
+@dataclass(frozen=True, slots=True)
+class GetDataOfEspByDate(UseCase):
+    data_repository: DataRepository
+    
+    @dataclass(frozen=True, slots=True)
+    class Input:
+        initialDate: str
+        finalDate: str
+    
+    @dataclass(frozen=True, slots=True)
+    class Output:
+        data: dict[DataOfEsp]
+        success: bool
+        message: str
+        
+    
+    def execute(self, input:'Input') -> 'Output':
+        try:
+            initialDate = datetime.strptime(input.initialDate, "%Y-%m-%d")
+            finalDate = datetime.strptime(input.finalDate, "%Y-%m-%d")
+            data_of_esp = self.data_repository.get_by_date(initialDate,finalDate)
+            return self.Output(message="Data retrieve successfuly", success=True, data=data_of_esp)
+        except DomainException as e:
+            return self.Output(message=e.message, success=False)    
