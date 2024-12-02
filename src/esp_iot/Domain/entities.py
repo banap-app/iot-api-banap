@@ -18,12 +18,13 @@ class DataOfEsp(Entity):
     updated_at: Optional[datetime] = field(default=None)
 
     def __post_init__(self):
-        # Calcula o horário do Brasil (UTC-3)
         now = datetime.utcnow() - timedelta(hours=3)
-        
-        # Atribui os valores de created_at e updated_at
-        object.__setattr__(self, "created_at", now)
-        object.__setattr__(self, "updated_at", now)
+
+        # Define `created_at` e `updated_at` apenas se não foram fornecidos
+        if self.created_at is None:
+            object.__setattr__(self, "created_at", now)
+        if self.updated_at is None:
+            object.__setattr__(self, "updated_at", now)
 
         # Valida os campos
         errors = self.validate()

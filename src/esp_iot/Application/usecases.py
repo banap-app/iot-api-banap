@@ -58,3 +58,23 @@ class GetDataOfEspByDate(UseCase):
             return self.Output(message="Data retrieve successfuly", success=True, data=data_of_esp)
         except DomainException as e:
             return self.Output(message=e.message, success=False)    
+        
+
+@dataclass(frozen=True, slots=True)
+class GetLastDataOfEsp(UseCase):
+    data_repository: DataRepository
+    
+    @dataclass(frozen=True, slots=True)
+    class Output:
+        message: str
+        data: DataOfEsp
+        success: bool
+        
+    
+    def execute(self) -> 'Output':
+        try:
+            data_of_esp = self.data_repository.get_last()
+            print(data_of_esp)
+            return self.Output(message="Data retrieve successfuly", success=True, data=data_of_esp)
+        except DomainException as e:
+            return self.Output(message=e.message, success=False)

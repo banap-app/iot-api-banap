@@ -73,3 +73,34 @@ class DataRepositoryMongoDB(DataRepository):
 
     def get_all(self) -> List[DataOfEsp]:
         return super().get_all()
+
+    def get_last(self) -> DataOfEsp:
+        """
+        Retorna o último registro de DataOfEsp com base no campo created_at.
+        """
+        # Define a consulta para ordenar por 'created_at' em ordem decrescente
+        query = {}
+        sort_order = [("created_at", -1)]  # -1 para ordem decrescente
+
+        # Verifica se a conexão está ativa antes de consultar os dados
+        if self.connection.is_connected():
+            result = self.connection.query(query, sort=sort_order, limit=1)
+
+            # Converte o resultado em um objeto DataOfEsp, se existir
+            if result:
+                data = result[0]  # Pega o único item retornado
+                return DataOfEsp(
+                    humidity=data["humidity"],
+                    temperature=data["temperature"],
+                    conductivity=data["conductivity"],
+                    ph=data["ph"],
+                    nitrogen=data["nitrogen"],
+                    phosphorus=data["phosphorus"],
+                    potassium=data["potassium"],
+                    created_at=data["created_at"],
+                    updated_at=data["updated_at"]
+                )
+            else:
+                raise ValueError("No data found")
+        else:
+            raise ConnectionError("No active connection")

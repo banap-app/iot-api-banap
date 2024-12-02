@@ -17,3 +17,6 @@ class DataRepository(ABC):
     @abstractmethod
     def get_by_date(self, initialDate: datetime, finalDate: datetime)->List[DataOfEsp]:
         raise NotImplementedError("get_by_date is not implemented")
+    
+    def get_last(self):
+        raise NotImplementedError("get_last is not implemented")
